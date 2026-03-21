@@ -132,21 +132,9 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="relative flex w-[260px] shrink-0 flex-col bg-white">
-      {/* Logo */}
-      <div className="flex items-center gap-2.5 px-7 pt-7 pb-6">
-        <div className="flex size-9 items-center justify-center rounded-lg bg-[#4C6FFF]">
-          <svg className="size-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z" />
-          </svg>
-        </div>
-        <span className="text-xl font-bold tracking-tight text-[#1A1F36]">
-          BDL+
-        </span>
-      </div>
-
+    <aside className="flex w-[260px] shrink-0 flex-col overflow-y-auto bg-white">
       {/* Navigation */}
-      <nav className="flex-1 space-y-7 px-4 pt-2">
+      <nav className="flex-1 space-y-7 px-4 pt-5">
         {navSections.map((section) => (
           <div key={section.title}>
             <h3 className="mb-3 px-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#8F95B2]">
@@ -179,6 +167,38 @@ export function Sidebar() {
         ))}
       </nav>
 
+      {/* Bottom: Settings & Log Out */}
+      <div className="border-t border-[#EEF0F6] px-4 py-4">
+        <ul className="space-y-1">
+          <li>
+            <Link
+              href="/settings"
+              className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-medium transition-all duration-200 ${
+                pathname === "/settings"
+                  ? "bg-[#EEF2FF] text-[#4C6FFF] shadow-[0_1px_3px_rgba(76,111,255,0.08)]"
+                  : "text-[#5A607F] hover:bg-[#F7F8FC] hover:text-[#1A1F36]"
+              }`}
+            >
+              <svg className={`size-5 transition-colors ${pathname === "/settings" ? "text-[#4C6FFF]" : "text-[#8F95B2]"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Settings
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/login"
+              className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-medium text-[#E2613B] transition-all duration-200 hover:bg-[#FFF8F6]"
+            >
+              <svg className="size-5 text-[#E2613B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              Log Out
+            </Link>
+          </li>
+        </ul>
+      </div>
     </aside>
   );
 }

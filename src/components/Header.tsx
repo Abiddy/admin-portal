@@ -2,7 +2,7 @@
 
 export function Header() {
   return (
-    <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-gray-50 px-6">
+    <header className="flex flex-1 items-center justify-between px-6 py-3">
       <div className="flex flex-1 items-center justify-center">
         <div className="flex w-full max-w-md items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2">
           <svg className="size-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -2,42 +2,50 @@ import Link from "next/link";
 
 const metricCards = [
   {
-    label: "Appointments",
-    value: "24.4k",
-    icon: "calendar",
+    label: "Total Patients",
+    value: "41",
+    subtitle: "Current Patients",
+    icon: "patient",
     iconBg: "bg-[#EFF2F7]",
     iconColor: "text-[#6B7A99]",
+    buttonLabel: "View All",
   },
   {
-    label: "Total Patient",
-    value: "166.3k",
-    icon: "patient",
+    label: "Consultation Requests",
+    value: "2",
+    subtitle: "New Requests",
+    icon: "calendar",
     iconBg: "bg-[#FFF0ED]",
     iconColor: "text-[#E2613B]",
+    buttonLabel: "View All",
   },
   {
-    label: "Clinic Consulting",
-    value: "53.5k",
+    label: "Test Kit Orders",
+    value: "4",
+    subtitle: "Pending Orders",
     icon: "clinic",
     iconBg: "bg-[#FFF8ED]",
     iconColor: "text-[#E2963B]",
+    buttonLabel: "Track Orders",
   },
   {
-    label: "Video Consulting",
-    value: "28.0k",
+    label: "Test Results",
+    value: "3",
+    subtitle: "New Results",
     icon: "video",
     iconBg: "bg-[#EDFAF7]",
     iconColor: "text-[#2BBBA0]",
+    buttonLabel: "View Results",
   },
 ];
 
-const patientAgeGroups = [
-  { label: "8-15", value: 17, maxValue: 150 },
-  { label: "16-20", value: 45, maxValue: 150 },
-  { label: "21-29", value: 102, maxValue: 150, highlighted: true },
-  { label: "30-45", value: 148, maxValue: 150 },
-  { label: "46-60", value: 58, maxValue: 150 },
-  { label: "61-80", value: 3, maxValue: 150 },
+const activities = [
+  { description: "Sarah G.'s results are ready", time: "10/10/25 at 6:30 AM" },
+  { description: "Sarah G.'s test kit processing", time: "10/10/25 at 6:30 AM" },
+  { description: "Sarah G. test kit received", time: "10/10/25 at 6:30 AM" },
+  { description: "Sarah G. mailed in her test kit", time: "10/10/25 at 6:30 AM" },
+  { description: "Sarah G. ordered a test kit.", time: "10/10/25 at 6:30 AM" },
+  { description: "Sarah G. requested a consult", time: "10/10/25 at 6:30 AM" },
 ];
 
 const appointmentRequests = [
@@ -47,34 +55,47 @@ const appointmentRequests = [
   { name: "Khalil Ahmed", date: "10 Feb, 11:00 am - 12:00 am", type: "Family Counselling" },
 ];
 
-const todayAppointments = [
-  { name: "Jhon Smith", type: "Clinic Consulting", status: "Ongoing" },
-  { name: "Frank Murray", type: "Video Consulting", time: "10:25" },
-  { name: "Sarah Wilson", type: "Clinic Consulting", time: "11:00" },
+const datePicker = [
+  { day: 13, dots: ["#4C6FFF", "#E2613B"], active: true },
+  { day: 14, dots: ["#4C6FFF"] },
+  { day: 15, dots: ["#E2963B"] },
+  { day: 16, dots: [] },
+  { day: 17, dots: ["#4C6FFF", "#E2613B"] },
+  { day: 18, dots: ["#1DAB6B", "#4C6FFF"] },
+  { day: 19, dots: ["#E2613B"] },
+  { day: 20, dots: [] },
+  { day: 21, dots: ["#1DAB6B"] },
+  { day: 22, dots: [] },
+  { day: 23, dots: ["#4C6FFF"] },
+  { day: 24, dots: [] },
+  { day: 25, dots: ["#E2963B"] },
 ];
 
-const recentPatients = [
-  { name: "Deveon Lane", visitId: "OPD-2345", date: "Dec 21, 2022", gender: "Male", diseases: "Diabetes", status: "Out-Patient" },
-  { name: "Marcus Reid", visitId: "OPD-2346", date: "Dec 20, 2022", gender: "Female", diseases: "Hypertension", status: "In-Patient" },
-  { name: "Jordan Blake", visitId: "OPD-2347", date: "Dec 19, 2022", gender: "Male", diseases: "Asthma", status: "Out-Patient" },
-];
-
-const calendarDays = [
-  { day: "S", dates: [3, 4, 5, 6, 7, 8, 9] },
+const scheduleList = [
+  { type: "Individual Counselling", color: "#4C6FFF", name: "Ibrahim Kadri", dateTime: "13 Feb, 11:00 am - 11:45 am", mode: "video" },
+  { type: "Couple Counselling", color: "#E2613B", name: "Miqdad ibn Aswad", dateTime: "13 Feb, 12:00 pm - 12:45 pm", mode: "phone" },
+  { type: "Teen Counselling", color: "#E2963B", name: "Sa'd ibn Abi Waqqas", dateTime: "13 Feb, 1:00 pm - 1:45 pm", mode: "video" },
+  { type: "Individual Counselling", color: "#4C6FFF", name: "Abu Talha al-Ansari", dateTime: "13 Feb, 3:00 pm - 3:45 pm", mode: "phone" },
+  { type: "Couple Counselling", color: "#E2613B", name: "Abdullah ibn Masud", dateTime: "13 Feb, 4:00 pm - 4:45 pm", mode: "phone" },
+  { type: "Family Counselling", color: "#1DAB6B", name: "Zayd ibn Harithah", dateTime: "7 Feb, 7:00 pm - 7:45 pm", mode: "video" },
 ];
 
 function MetricCard({
   label,
   value,
+  subtitle,
   icon,
   iconBg,
   iconColor,
+  buttonLabel,
 }: {
   label: string;
   value: string;
+  subtitle: string;
   icon: string;
   iconBg: string;
   iconColor: string;
+  buttonLabel: string;
 }) {
   const icons: Record<string, React.ReactNode> = {
     calendar: (
@@ -101,65 +122,44 @@ function MetricCard({
 
   return (
     <div className="rounded-2xl bg-white px-5 py-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-      <div className={`mb-3 flex size-12 items-center justify-center rounded-xl ${iconBg} ${iconColor}`}>
-        {icons[icon]}
+      <div className="mb-3 flex items-start justify-between">
+        <div className={`flex size-11 items-center justify-center rounded-xl ${iconBg} ${iconColor}`}>
+          {icons[icon]}
+        </div>
+        <Link href="#" className="text-[12px] font-medium text-[#4C6FFF] underline underline-offset-2 hover:text-[#3A5BE0]">
+          {buttonLabel}
+        </Link>
       </div>
       <p className="text-[13px] font-medium text-[#8F95B2]">{label}</p>
-      <p className="mt-0.5 text-2xl font-bold text-[#1A1F36]">{value}</p>
+      <p className="mt-0.5 text-2xl font-bold leading-tight text-[#1A1F36]">{value}</p>
+      <p className="mt-0.5 text-[11px] text-[#8F95B2]">{subtitle}</p>
     </div>
   );
 }
 
-const yAxisLabels = [150, 100, 50, 20, 0];
-
-function PatientsOverviewChart() {
+function ActivityTable() {
   return (
-    <div className="flex h-full flex-col rounded-2xl bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-lg font-bold text-[#1A1F36]">Patients Overview</h2>
-        <select className="rounded-lg border border-[#E2E6EF] bg-white px-3 py-1.5 text-sm font-medium text-[#5A607F] outline-none">
-          <option>This Month</option>
-        </select>
+    <div className="flex h-full flex-col rounded-2xl bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+      <div className="px-6 pt-5 pb-4">
+        <h2 className="text-[15px] font-bold text-[#1A1F36]">Recent Activity</h2>
       </div>
-
-      <div className="flex flex-1 items-end gap-0">
-        {/* Y-axis labels */}
-        <div className="flex flex-col justify-between pb-7 pr-3 text-right" style={{ height: 200 }}>
-          {yAxisLabels.map((label) => (
-            <span key={label} className="text-[11px] font-medium text-[#8F95B2] leading-none">
-              {label}
-            </span>
-          ))}
-        </div>
-
-        {/* Bars */}
-        <div className="flex flex-1 items-end justify-between gap-2" style={{ height: 220 }}>
-          {patientAgeGroups.map((group) => {
-            const heightPct = Math.max((group.value / 150) * 100, 3);
-            return (
-              <div key={group.label} className="flex flex-1 flex-col items-center gap-1.5">
-                <span className="rounded-full border border-[#D5DAE5] bg-white px-2 py-0.5 text-[11px] font-semibold text-[#4A5068]">
-                  {String(group.value).padStart(2, "0")}
-                </span>
-                <div className="w-full max-w-[44px]" style={{ height: 170 }}>
-                  <div className="flex h-full flex-col justify-end">
-                    <div
-                      className={`w-full rounded-t-lg transition-all ${
-                        group.highlighted
-                          ? "bg-gradient-to-t from-[#4C6FFF] to-[#7B9CFF]"
-                          : "bg-[#EEF0F6]"
-                      }`}
-                      style={{ height: `${heightPct}%` }}
-                    />
-                  </div>
-                </div>
-                <span className="text-[12px] font-medium text-[#8F95B2]">
-                  {group.label}
-                </span>
-              </div>
-            );
-          })}
-        </div>
+      <div className="flex-1 px-6 pb-4">
+        <table className="w-full">
+          <thead>
+            <tr>
+              <th className="pb-3 text-left text-[11px] font-bold uppercase tracking-wider text-[#1A1F36]">Activity</th>
+              <th className="pb-3 text-right text-[11px] font-bold uppercase tracking-wider text-[#1A1F36]">Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {activities.map((activity, i) => (
+              <tr key={i} className="border-b border-[#F0F1F5] last:border-0">
+                <td className="py-3 text-[13px] text-[#3D4354]">{activity.description}</td>
+                <td className="py-3 text-right text-[13px] text-[#8F95B2]">{activity.time}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
@@ -191,92 +191,124 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* Right: Patients Overview Chart */}
-        <PatientsOverviewChart />
+        {/* Right: Activity Table */}
+        <ActivityTable />
       </div>
 
       {/* Bottom section - 2/3 left + 1/3 right */}
       <div className="grid gap-5 lg:grid-cols-[2fr_1fr]">
-        {/* Left: Today Appointments & Calendar (placeholder for upcoming appointments) */}
-        <div className="space-y-4">
-          <div className="rounded-2xl bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-            <h2 className="mb-4 font-semibold text-[#1A1F36]">Today Appointments</h2>
-            <ul className="space-y-4">
-              {todayAppointments.map((apt) => (
-                <li key={apt.name} className="flex items-center gap-3">
-                  <Avatar name={apt.name} />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-[#1A1F36]">{apt.name}</p>
-                    <p className="text-xs text-[#8F95B2]">{apt.type}</p>
-                  </div>
-                  {apt.status === "Ongoing" ? (
-                    <span className="rounded-full bg-[#EEF2FF] px-2.5 py-0.5 text-xs font-medium text-[#4C6FFF]">
-                      Ongoing
-                    </span>
-                  ) : (
-                    <span className="text-sm font-medium text-[#5A607F]">{apt.time}</span>
-                  )}
-                </li>
-              ))}
-            </ul>
+        {/* Left: Upcoming Appointments */}
+        <div className="rounded-2xl bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+          {/* Header */}
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-[#1A1F36]">Upcoming Appointments</h2>
+            <select className="rounded-lg border border-[#E2E6EF] bg-white px-3 py-1.5 text-sm font-medium text-[#5A607F] outline-none">
+              <option>February 2024</option>
+            </select>
           </div>
 
-          <div className="rounded-2xl bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-            <div className="mb-3 flex items-center justify-between">
-              <span className="text-sm font-medium text-[#1A1F36]">03 - 09 May, 2021</span>
-              <div className="flex gap-1">
+          {/* Date Picker Carousel */}
+          <div className="mb-6 flex items-center gap-1">
+            <div className="flex flex-1 gap-1 overflow-hidden">
+              {datePicker.map((d) => (
                 <button
+                  key={d.day}
                   type="button"
-                  className="rounded p-1 hover:bg-[#F5F7FA]"
-                  aria-label="Previous"
-                >
-                  <svg className="size-4 text-[#5A607F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  className="rounded p-1 hover:bg-[#F5F7FA]"
-                  aria-label="Next"
-                >
-                  <svg className="size-4 text-[#5A607F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div className="grid grid-cols-7 gap-1 text-center text-xs">
-              {["S", "M", "T", "W", "T", "F", "S"].map((d) => (
-                <span key={d} className="font-medium text-[#8F95B2]">
-                  {d}
-                </span>
-              ))}
-              {[3, 4, 5, 6, 7, 8, 9].map((n) => (
-                <span
-                  key={n}
-                  className={`rounded-full py-1 ${
-                    n === 6 ? "bg-[#4C6FFF] font-medium text-white" : "text-[#5A607F] hover:bg-[#F5F7FA]"
+                  className={`flex flex-1 flex-col items-center gap-1.5 rounded-xl py-2 transition-colors ${
+                    d.active
+                      ? "border-2 border-[#4C6FFF] bg-white"
+                      : "border border-[#EEF0F6] bg-white hover:border-[#D5DAE5]"
                   }`}
                 >
-                  {n}
-                </span>
+                  <span className={`text-sm font-semibold ${d.active ? "text-[#4C6FFF]" : "text-[#1A1F36]"}`}>
+                    {d.day}
+                  </span>
+                  <div className="flex gap-0.5">
+                    {d.dots.map((color, i) => (
+                      <span key={i} className="size-1.5 rounded-full" style={{ backgroundColor: color }} />
+                    ))}
+                    {d.dots.length === 0 && <span className="size-1.5" />}
+                  </div>
+                </button>
               ))}
+            </div>
+            <button type="button" className="ml-1 shrink-0 rounded-lg p-1 text-[#8F95B2] hover:bg-[#F5F7FA]" aria-label="Next">
+              <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Schedule List Header */}
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-[15px] font-bold text-[#1A1F36]">Schedule List</h3>
+            <div className="flex gap-2">
+              <button type="button" className="flex items-center gap-1.5 rounded-lg border border-[#E2E6EF] px-3 py-1.5 text-[12px] font-medium text-[#5A607F] hover:bg-[#F5F7FA]">
+                <svg className="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                Filter
+              </button>
+              <button type="button" className="flex items-center gap-1.5 rounded-lg bg-[#1A1F36] px-3 py-1.5 text-[12px] font-medium text-white hover:bg-[#2A2F46]">
+                <svg className="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Add New
+              </button>
             </div>
           </div>
 
-          <div className="rounded-2xl bg-[#1A1F36] p-5 text-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-[#8F95B2]">Next Week</p>
-                <p className="mt-1 text-sm font-semibold">Upcoming Schedules-2</p>
-              </div>
-              <button
-                type="button"
-                className="rounded-lg bg-[#4C6FFF] px-4 py-2 text-sm font-medium hover:bg-[#3A5BE0]"
-              >
-                Open
-              </button>
-            </div>
+          {/* Schedule Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-[#EEF0F6]">
+                  <th className="pb-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[#8F95B2]">Appoint for</th>
+                  <th className="pb-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[#8F95B2]">Name</th>
+                  <th className="pb-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[#8F95B2]">Date & Time</th>
+                  <th className="pb-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[#8F95B2]">Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                {scheduleList.map((item, i) => (
+                  <tr key={i} className="border-b border-[#F0F1F5] last:border-0">
+                    <td className="py-3.5">
+                      <div className="flex items-center gap-2">
+                        <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: item.color }} />
+                        <span className="text-[13px] font-medium text-[#1A1F36]">{item.type}</span>
+                      </div>
+                    </td>
+                    <td className="py-3.5">
+                      <div className="flex items-center gap-2.5">
+                        <Avatar name={item.name} />
+                        <span className="text-[13px] text-[#3D4354]">{item.name}</span>
+                      </div>
+                    </td>
+                    <td className="py-3.5 text-[13px] text-[#5A607F]">{item.dateTime}</td>
+                    <td className="py-3.5">
+                      <div className="flex items-center gap-2">
+                        {item.mode === "video" ? (
+                          <svg className="size-5 text-[#2BBBA0]" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" />
+                          </svg>
+                        ) : (
+                          <svg className="size-5 text-[#E2963B]" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z" />
+                          </svg>
+                        )}
+                        <button type="button" className="rounded p-0.5 text-[#8F95B2] hover:bg-[#F5F7FA]" aria-label="More">
+                          <svg className="size-4" fill="currentColor" viewBox="0 0 24 24">
+                            <circle cx="12" cy="5" r="1.5" />
+                            <circle cx="12" cy="12" r="1.5" />
+                            <circle cx="12" cy="19" r="1.5" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -322,76 +354,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Recent Patients Table */}
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
-        <div className="flex items-center justify-between border-b border-gray-200 p-4">
-          <h2 className="font-semibold text-gray-800">Recent Patients</h2>
-          <Link href="#" className="text-sm text-blue-700 hover:underline">
-            View All &gt;
-          </Link>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
-                  Patient Name
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
-                  Visit Id
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
-                  Date
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
-                  Gender
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
-                  Diseases
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
-                  Status
-                </th>
-                <th className="px-4 py-3" />
-              </tr>
-            </thead>
-            <tbody>
-              {recentPatients.map((patient) => (
-                <tr key={patient.visitId} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <Avatar name={patient.name} />
-                      <span className="font-medium text-gray-800">{patient.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{patient.visitId}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{patient.date}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{patient.gender}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{patient.diseases}</td>
-                  <td className="px-4 py-3">
-                    <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
-                      {patient.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <button
-                      type="button"
-                      className="rounded p-1 hover:bg-gray-200"
-                      aria-label="More options"
-                    >
-                      <svg className="size-5 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-                        <circle cx="12" cy="5" r="1.5" />
-                        <circle cx="12" cy="12" r="1.5" />
-                        <circle cx="12" cy="19" r="1.5" />
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
     </div>
   );
 }
