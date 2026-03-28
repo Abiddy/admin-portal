@@ -1,0 +1,88 @@
+// BDL Doctors Portal — 5 core entities (SQLite: role/status as strings)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Practice {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  users     User[]
+  orders    Order[]
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  // LAB_ADMIN | PRACTICE_ADMIN | DOCTOR
+  role         String
+  practiceId   String?
+  practice     Practice? @relation(fields: [practiceId], references: [id])
+
+  submittedOrders   Order[]             @relation("SubmittedBy")
+  uploadedResults   Result[]            @relation("UploadedBy")
+  messages          OrderMessage[]
+  orderStatusEvents OrderStatusEvent[]
+}
+
+model Order {
+  id            String @id @default(cuid())
+  practiceId    String
+  practice      Practice @relation(fields: [practiceId], references: [id])
+  submittedById String
+  submittedBy   User     @relation("SubmittedBy", fields: [submittedById], references: [id])
+  // SUBMITTED | KIT_RECEIVED | PROCESSING | RESULTS_READY
+  status        String   @default("SUBMITTED")
+
+  patientName  String?
+  patientPhone String?
+  patientEmail String?
+  notes        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  results        Result[]
+  messages       OrderMessage[]
+  statusEvents   OrderStatusEvent[]
+}
+
+model OrderStatusEvent {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  status      String
+  note        String?
+  actorUserId String?
+  actor       User?    @relation(fields: [actorUserId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model Result {
+  id           String   @id @default(cuid())
+  orderId      String
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fileName     String
+  fileKey      String
+  uploadedById String
+  uploadedBy   User     @relation("UploadedBy", fields: [uploadedById], references: [id])
+  createdAt    DateTime @default(now())
+}
+
+model OrderMessage {
+  id        String   @id @default(cuid())
+  orderId String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  body      String
+  createdAt DateTime @default(now())
+}

@@ -1,62 +1,29 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+import { Suspense } from "react";
+import { LoginForm } from "./LoginForm";
 
 export default function LoginPage() {
-  const router = useRouter();
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    router.push("/dashboard");
-  };
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 shadow-lg">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#F5F7FA] px-4 sm:px-6">
+      <div
+        className="bg-grid-radial-fade absolute inset-0"
+        aria-hidden
+      />
+      <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/60 bg-white/40 p-8 shadow-[0_8px_40px_rgba(26,31,54,0.1),0_1px_0_rgba(255,255,255,0.8)_inset] ring-1 ring-white/30 backdrop-blur-xl backdrop-saturate-150">
         <div className="mb-8 flex items-center justify-center gap-2">
-          <span className="text-2xl font-bold text-gray-800">BDL+</span>
-          <svg className="size-6 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-          </svg>
+          <span className="text-2xl font-bold text-[#1A1F36]">BDL+</span>
         </div>
 
-        <h1 className="mb-2 text-center text-xl font-semibold text-gray-800">Welcome back</h1>
-        <p className="mb-6 text-center text-sm text-gray-500">Sign in to access the admin portal</p>
+        <h1 className="mb-2 text-center text-xl font-semibold text-[#1A1F36]">Welcome back</h1>
+        <p className="mb-6 text-center text-sm text-[#8F95B2]">Sign in to the BDL Doctors Portal</p>
+        <p className="mb-4 rounded-lg border border-white/40 bg-white/35 px-3 py-2 text-center text-[11px] text-[#5A607F] backdrop-blur-sm">
+          Demo: <span className="font-mono">doctor@demo.com</span> / <span className="font-mono">demo1234</span>
+          {" · "}
+          <span className="font-mono">lab@bdl.com</span> same password
+        </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-700">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              placeholder="you@example.com"
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-800 placeholder-gray-400 focus:border-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-700"
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="mb-2 block text-sm font-medium text-gray-700">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-800 placeholder-gray-400 focus:border-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-700"
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full rounded-lg bg-blue-800 py-3 font-medium text-white transition-colors hover:bg-blue-900"
-          >
-            Sign in
-          </button>
-        </form>
+        <Suspense fallback={<div className="h-48 animate-pulse rounded-lg bg-white/30 backdrop-blur-sm" />}>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );

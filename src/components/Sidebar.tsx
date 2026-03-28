@@ -2,36 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
+import { ROLES } from "@/lib/roles";
 
-const navSections = [
-  {
-    title: "General",
-    items: [
-      { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
-      { href: "/patients", label: "Patients", icon: "patients" },
-      { href: "/messages", label: "Messages", icon: "messages" },
-    ],
-  },
-  {
-    title: "Test Kits",
-    items: [
-      { href: "/orders", label: "Orders", icon: "orders" },
-      { href: "/results", label: "Results", icon: "results" },
-      {
-        href: "/treatment-plans",
-        label: "Treatment Plans",
-        icon: "treatment-plans",
-      },
-    ],
-  },
-  {
-    title: "BDL Health",
-    items: [
-      { href: "/contact-us", label: "Contact Us", icon: "contact" },
-      { href: "/help-center", label: "Help Center", icon: "help" },
-    ],
-  },
-];
+const portalNav = [
+  { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
+  { href: "/orders", label: "Orders", icon: "orders" },
+  { href: "/results", label: "Results", icon: "results" },
+] as const;
+
+const labNav = [{ href: "/lab", label: "Lab queue", icon: "lab" }] as const;
 
 function NavIcon({
   name,
@@ -50,26 +30,6 @@ function NavIcon({
           strokeLinejoin="round"
           strokeWidth={1.8}
           d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10-2a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1h-4a1 1 0 01-1-1v-6z"
-        />
-      </svg>
-    ),
-    patients: (
-      <svg className={cls} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={1.8}
-          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-        />
-      </svg>
-    ),
-    messages: (
-      <svg className={cls} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={1.8}
-          d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
         />
       </svg>
     ),
@@ -93,33 +53,13 @@ function NavIcon({
         />
       </svg>
     ),
-    "treatment-plans": (
+    lab: (
       <svg className={cls} fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth={1.8}
-          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-        />
-      </svg>
-    ),
-    contact: (
-      <svg className={cls} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={1.8}
-          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-        />
-      </svg>
-    ),
-    help: (
-      <svg className={cls} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={1.8}
-          d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
         />
       </svg>
     ),
@@ -128,76 +68,80 @@ function NavIcon({
   return paths[name] || null;
 }
 
+function NavLink({
+  href,
+  label,
+  icon,
+  pathname,
+}: {
+  href: string;
+  label: string;
+  icon: string;
+  pathname: string;
+}) {
+  const isActive =
+    pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
+  return (
+    <li>
+      <Link
+        href={href}
+        className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-medium transition-all duration-200 ${
+          isActive
+            ? "bg-[#EEF2FF] text-[#4C6FFF] shadow-[0_1px_3px_rgba(76,111,255,0.08)]"
+            : "text-[#5A607F] hover:bg-[#F7F8FC] hover:text-[#1A1F36]"
+        }`}
+      >
+        <NavIcon name={icon} active={isActive} />
+        {label}
+      </Link>
+    </li>
+  );
+}
+
 export function Sidebar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const isLabAdmin = session?.user?.role === ROLES.LAB_ADMIN;
 
   return (
     <aside className="flex w-[260px] shrink-0 flex-col overflow-y-auto bg-white">
-      {/* Navigation */}
       <nav className="flex-1 space-y-7 px-4 pt-5">
-        {navSections.map((section) => (
-          <div key={section.title}>
+        <div>
+          <h3 className="mb-3 px-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#8F95B2]">
+            Portal
+          </h3>
+          <ul className="space-y-1">
+            {portalNav.map((item) => (
+              <NavLink key={item.href} pathname={pathname} {...item} />
+            ))}
+          </ul>
+        </div>
+
+        {isLabAdmin && (
+          <div>
             <h3 className="mb-3 px-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#8F95B2]">
-              {section.title}
+              Laboratory
             </h3>
             <ul className="space-y-1">
-              {section.items.map((item) => {
-                const isActive =
-                  pathname === item.href ||
-                  (item.href !== "/dashboard" &&
-                    pathname.startsWith(item.href));
-                return (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-medium transition-all duration-200 ${
-                        isActive
-                          ? "bg-[#EEF2FF] text-[#4C6FFF] shadow-[0_1px_3px_rgba(76,111,255,0.08)]"
-                          : "text-[#5A607F] hover:bg-[#F7F8FC] hover:text-[#1A1F36]"
-                      }`}
-                    >
-                      <NavIcon name={item.icon} active={isActive} />
-                      {item.label}
-                    </Link>
-                  </li>
-                );
-              })}
+              {labNav.map((item) => (
+                <NavLink key={item.href} pathname={pathname} {...item} />
+              ))}
             </ul>
           </div>
-        ))}
+        )}
       </nav>
 
-      {/* Bottom: Settings & Log Out */}
       <div className="border-t border-[#EEF0F6] px-4 py-4">
-        <ul className="space-y-1">
-          <li>
-            <Link
-              href="/settings"
-              className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-medium transition-all duration-200 ${
-                pathname === "/settings"
-                  ? "bg-[#EEF2FF] text-[#4C6FFF] shadow-[0_1px_3px_rgba(76,111,255,0.08)]"
-                  : "text-[#5A607F] hover:bg-[#F7F8FC] hover:text-[#1A1F36]"
-              }`}
-            >
-              <svg className={`size-5 transition-colors ${pathname === "/settings" ? "text-[#4C6FFF]" : "text-[#8F95B2]"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              Settings
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/login"
-              className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-medium text-[#E2613B] transition-all duration-200 hover:bg-[#FFF8F6]"
-            >
-              <svg className="size-5 text-[#E2613B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-              Log Out
-            </Link>
-          </li>
-        </ul>
+        <button
+          type="button"
+          onClick={() => signOut({ callbackUrl: "/login" })}
+          className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[13.5px] font-medium text-[#E2613B] transition-all duration-200 hover:bg-[#FFF8F6]"
+        >
+          <svg className="size-5 text-[#E2613B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          Log out
+        </button>
       </div>
     </aside>
   );
