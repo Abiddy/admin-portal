@@ -83,7 +83,7 @@ export async function notifyPracticeResultsReady(orderId: string): Promise<void>
     const users = await prisma.user.findMany({
       where: {
         practiceId: order.practiceId,
-        role: { in: [ROLES.DOCTOR, ROLES.PRACTICE_ADMIN] },
+        role: ROLES.DOCTOR,
       },
       select: { email: true },
     });

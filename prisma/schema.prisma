@@ -16,6 +16,7 @@ model Practice {
   createdAt DateTime @default(now())
   users     User[]
   orders    Order[]
+  invites   UserInvite[]
 }
 
 model User {
@@ -23,7 +24,7 @@ model User {
   email        String    @unique
   passwordHash String
   name         String
-  // LAB_ADMIN | PRACTICE_ADMIN | DOCTOR
+  // LAB_ADMIN | DOCTOR (practice staff; practiceId set except lab admins)
   role         String
   practiceId   String?
   practice     Practice? @relation(fields: [practiceId], references: [id])
@@ -32,6 +33,25 @@ model User {
   uploadedResults   Result[]            @relation("UploadedBy")
   messages          OrderMessage[]
   orderStatusEvents OrderStatusEvent[]
+  invitesCreated    UserInvite[] @relation("InvitesCreated")
+}
+
+// Pending signup: lab emails token; user sets password on /invite/accept
+model UserInvite {
+  id          String    @id @default(cuid())
+  email       String
+  name        String
+  role        String
+  practiceId  String?
+  practice    Practice? @relation(fields: [practiceId], references: [id], onDelete: SetNull)
+  tokenHash   String    @unique
+  expiresAt   DateTime
+  usedAt      DateTime?
+  createdAt   DateTime  @default(now())
+  createdById String
+  createdBy   User      @relation("InvitesCreated", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@index([email])
 }
 
 model Order {

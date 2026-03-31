@@ -7,10 +7,15 @@ export default auth((req) => {
 
   const isLogin = pathname === "/login";
   const isAuthApi = pathname.startsWith("/api/auth");
+  const isInviteAccept = pathname === "/invite/accept";
 
   if (isAuthApi) return NextResponse.next();
 
-  if (!loggedIn && !isLogin) {
+  if (loggedIn && isInviteAccept) {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
+  }
+
+  if (!loggedIn && !isLogin && !isInviteAccept) {
     const url = new URL("/login", req.url);
     url.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(url);

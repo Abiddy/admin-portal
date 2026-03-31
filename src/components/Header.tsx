@@ -1,13 +1,13 @@
 "use client";
 
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { AddUserInviteModal } from "@/components/AddUserInviteModal";
+import { ROLES } from "@/lib/roles";
 
 function roleLabel(role: string) {
   switch (role) {
     case "LAB_ADMIN":
       return "Lab Admin";
-    case "PRACTICE_ADMIN":
-      return "Practice Admin";
     case "DOCTOR":
       return "Doctor";
     default:
@@ -47,12 +47,13 @@ export function Header() {
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="ml-2 flex items-center gap-2">
         {status === "loading" ? (
           <div className="h-10 w-40 animate-pulse rounded-lg bg-[#F0F1F5]" />
         ) : (
           <>
-            <div className="ml-2 flex items-center gap-3 rounded-lg border-l border-[#EEF0F6] pl-4">
+            {role === ROLES.LAB_ADMIN ? <AddUserInviteModal /> : null}
+            <div className="flex items-center gap-3 border-l border-[#EEF0F6] pl-4">
               <div className="flex size-10 items-center justify-center rounded-full bg-[#EEF2FF] text-sm font-semibold text-[#4C6FFF]">
                 {initials(name, email)}
               </div>
@@ -61,13 +62,6 @@ export function Header() {
                 <span className="truncate text-xs text-[#8F95B2]">{roleLabel(role)}</span>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => signOut({ callbackUrl: "/login" })}
-              className="rounded-lg border border-[#E2E6EF] px-3 py-2 text-xs font-semibold text-[#5A607F] transition-colors hover:bg-[#F5F7FA] hover:text-[#1A1F36]"
-            >
-              Sign out
-            </button>
           </>
         )}
       </div>

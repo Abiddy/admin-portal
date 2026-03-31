@@ -29,16 +29,6 @@ async function main() {
     },
   });
 
-  const practiceAdmin = await prisma.user.create({
-    data: {
-      email: "admin@demo.com",
-      passwordHash,
-      name: "Practice Admin",
-      role: "PRACTICE_ADMIN",
-      practiceId: practice.id,
-    },
-  });
-
   const doctor = await prisma.user.create({
     data: {
       email: "doctor@demo.com",
@@ -146,7 +136,7 @@ async function main() {
     },
   });
 
-  console.log("Seed OK. Log in with lab@bdl.com / admin@demo.com / doctor@demo.com — password: demo1234");
+  console.log("Seed OK. Log in with lab@bdl.com or doctor@demo.com — password: demo1234");
 }
 
 main()
