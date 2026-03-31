@@ -1,7 +1,6 @@
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 import { PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
+import { persistResultPdf, resultPdfStoragePath } from "../src/lib/result-storage";
 
 const prisma = new PrismaClient();
 
@@ -116,13 +115,11 @@ async function main() {
       uploadedById: lab.id,
     },
   });
-  const relKey = `results/${demoResult.id}.pdf`;
-  const absPath = path.join(process.cwd(), "uploads", relKey);
-  await mkdir(path.dirname(absPath), { recursive: true });
+  const relKey = resultPdfStoragePath(demoResult.id);
   const demoPdf = Buffer.from(
     "%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Type/Page/MediaBox[0 0 612 792]/Parent 2 0 R>>endobj\nxref\n0 4\ntrailer<</Size 4/Root 1 0 R>>\nstartxref\n180\n%%EOF\n",
   );
-  await writeFile(absPath, demoPdf);
+  await persistResultPdf(relKey, demoPdf);
   await prisma.result.update({
     where: { id: demoResult.id },
     data: { fileKey: relKey },

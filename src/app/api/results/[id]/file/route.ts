@@ -1,6 +1,8 @@
 import { readFile } from "fs/promises";
+import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { getResultForViewer } from "@/lib/order-queries";
+import { createSignedResultDownloadUrl, isSupabaseResultStorageEnabled } from "@/lib/result-storage";
 import { resolveSafeUploadPath } from "@/lib/uploads";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -15,6 +17,14 @@ export async function GET(_request: Request, context: RouteContext) {
   const result = await getResultForViewer(id, session.user.id);
   if (!result || result.fileKey === "__pending__") {
     return new Response("Not found", { status: 404 });
+  }
+
+  if (isSupabaseResultStorageEnabled()) {
+    const signed = await createSignedResultDownloadUrl(result.fileKey, 180);
+    if (!signed) {
+      return new Response("Not found", { status: 404 });
+    }
+    return NextResponse.redirect(signed, 302);
   }
 
   const absPath = resolveSafeUploadPath(result.fileKey);

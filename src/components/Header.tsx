@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { AddUserInviteModal } from "@/components/AddUserInviteModal";
 import { ROLES } from "@/lib/roles";
@@ -52,7 +53,17 @@ export function Header() {
           <div className="h-10 w-40 animate-pulse rounded-lg bg-[#F0F1F5]" />
         ) : (
           <>
-            {role === ROLES.LAB_ADMIN ? <AddUserInviteModal /> : null}
+            {role === ROLES.LAB_ADMIN ? (
+              <>
+                <Link
+                  href="/lab/new-requisition"
+                  className="rounded-lg border border-[#C7D4FF] bg-[#EEF2FF] px-3 py-2 text-xs font-semibold text-[#4C6FFF] transition-colors hover:bg-[#E0E7FF]"
+                >
+                  New requisition
+                </Link>
+                <AddUserInviteModal />
+              </>
+            ) : null}
             <div className="flex items-center gap-3 border-l border-[#EEF0F6] pl-4">
               <div className="flex size-10 items-center justify-center rounded-full bg-[#EEF2FF] text-sm font-semibold text-[#4C6FFF]">
                 {initials(name, email)}

@@ -1,12 +1,10 @@
 "use server";
 
-import { mkdir, unlink, writeFile } from "fs/promises";
-import path from "path";
 import { auth } from "@/auth";
 import { transitionOrderStatus } from "@/lib/order-lifecycle";
 import { prisma } from "@/lib/prisma";
+import { persistResultPdf, removePersistedResultPdf, resultPdfStoragePath } from "@/lib/result-storage";
 import { isLabRole, ORDER_STATUS } from "@/lib/roles";
-import { UPLOAD_ROOT } from "@/lib/uploads";
 import { revalidatePath } from "next/cache";
 import type { FormState } from "../orders/actions";
 
@@ -53,7 +51,7 @@ export async function uploadLabResultAction(_prev: FormState, formData: FormData
   const clientName = sanitizeFileName(file.name);
 
   let createdId: string | null = null;
-  let absPath: string | null = null;
+  let fileKey: string | null = null;
 
   try {
     const created = await prisma.result.create({
@@ -65,23 +63,20 @@ export async function uploadLabResultAction(_prev: FormState, formData: FormData
       },
     });
     createdId = created.id;
+    fileKey = resultPdfStoragePath(created.id);
 
-    const relKey = `results/${created.id}.pdf`;
-    const targetPath = path.join(UPLOAD_ROOT, relKey);
-    await mkdir(path.dirname(targetPath), { recursive: true });
-    await writeFile(targetPath, buffer);
-    absPath = targetPath;
+    await persistResultPdf(fileKey, buffer);
 
     await prisma.result.update({
       where: { id: created.id },
-      data: { fileKey: relKey },
+      data: { fileKey },
     });
   } catch {
+    if (fileKey) {
+      await removePersistedResultPdf(fileKey).catch(() => {});
+    }
     if (createdId) {
       await prisma.result.delete({ where: { id: createdId } }).catch(() => {});
-    }
-    if (absPath) {
-      await unlink(absPath).catch(() => {});
     }
     return { error: "Could not save the file. Try again." };
   }
