@@ -19,11 +19,11 @@ export default function LoginPage() {
         <Suspense fallback={null}>
           <LoginInvitedNotice />
         </Suspense>
-        <p className="mb-4 rounded-lg border border-white/40 bg-white/35 px-3 py-2 text-center text-[11px] text-[#5A607F] backdrop-blur-sm">
+        {/* <p className="mb-4 rounded-lg border border-white/40 bg-white/35 px-3 py-2 text-center text-[11px] text-[#5A607F] backdrop-blur-sm">
           Demo: <span className="font-mono">doctor@demo.com</span> / <span className="font-mono">demo1234</span>
           {" · "}
           <span className="font-mono">lab@bdl.com</span> — same password (lab)
-        </p>
+        </p> */}
 
         <Suspense fallback={<div className="h-48 animate-pulse rounded-lg bg-white/30 backdrop-blur-sm" />}>
           <LoginForm />
