@@ -3,6 +3,7 @@
 import { auth } from "@/auth";
 import { notifyDoctorLabRequisition } from "@/lib/email/lab-requisition-notify";
 import { prisma } from "@/lib/prisma";
+import { isLabAdminUser, loadAuthzUser } from "@/lib/server-authz";
 import { ORDER_STATUS, ROLES } from "@/lib/roles";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -13,7 +14,8 @@ export async function createLabRequisitionAction(_prev: FormState, formData: For
   if (!session?.user?.id) {
     return { error: "You must be signed in." };
   }
-  if (session.user.role !== ROLES.LAB_ADMIN) {
+  const authUser = await loadAuthzUser(session.user.id);
+  if (!isLabAdminUser(authUser)) {
     return { error: "Only lab staff can create requisitions on behalf of a practice." };
   }
 

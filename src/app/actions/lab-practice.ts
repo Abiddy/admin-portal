@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { ROLES } from "@/lib/roles";
+import { isLabAdminUser, loadAuthzUser } from "@/lib/server-authz";
 import { revalidatePath } from "next/cache";
 
 export type CreatePracticeQuickResult =
@@ -12,7 +12,8 @@ export type CreatePracticeQuickResult =
 export async function createPracticeQuickAction(rawName: string): Promise<CreatePracticeQuickResult> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: "You must be signed in." };
-  if (session.user.role !== ROLES.LAB_ADMIN) {
+  const authUser = await loadAuthzUser(session.user.id);
+  if (!isLabAdminUser(authUser)) {
     return { ok: false, error: "Only lab staff can add practices." };
   }
 

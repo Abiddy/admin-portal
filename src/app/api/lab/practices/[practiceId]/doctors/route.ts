@@ -1,13 +1,18 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { isLabAdminUser, loadAuthzUser } from "@/lib/server-authz";
 import { ROLES } from "@/lib/roles";
 
 type Params = { params: Promise<{ practiceId: string }> };
 
 export async function GET(_req: Request, { params }: Params) {
   const session = await auth();
-  if (!session?.user?.id || session.user.role !== ROLES.LAB_ADMIN) {
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const authUser = await loadAuthzUser(session.user.id);
+  if (!isLabAdminUser(authUser)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

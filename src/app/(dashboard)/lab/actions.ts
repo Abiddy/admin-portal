@@ -4,7 +4,8 @@ import { auth } from "@/auth";
 import { transitionOrderStatus } from "@/lib/order-lifecycle";
 import { prisma } from "@/lib/prisma";
 import { persistResultPdf, removePersistedResultPdf, resultPdfStoragePath } from "@/lib/result-storage";
-import { isLabRole, ORDER_STATUS } from "@/lib/roles";
+import { isLabAdminUser, loadAuthzUser } from "@/lib/server-authz";
+import { ORDER_STATUS } from "@/lib/roles";
 import { revalidatePath } from "next/cache";
 import type { FormState } from "../orders/actions";
 
@@ -20,7 +21,8 @@ export async function uploadLabResultAction(_prev: FormState, formData: FormData
   if (!session?.user?.id) {
     return { error: "You must be signed in." };
   }
-  if (!isLabRole(session.user.role)) {
+  const authUser = await loadAuthzUser(session.user.id);
+  if (!isLabAdminUser(authUser)) {
     return { error: "Only lab staff can upload results." };
   }
 

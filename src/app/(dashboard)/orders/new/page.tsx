@@ -16,7 +16,7 @@ export default async function NewRequisitionPage() {
     select: { practiceId: true, role: true },
   });
 
-  if (!user?.practiceId || user.role === ROLES.LAB_ADMIN) {
+  if (user?.role !== ROLES.DOCTOR || !user.practiceId) {
     redirect("/orders");
   }
 

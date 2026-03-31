@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { sendUserInviteEmail } from "@/lib/email/user-invite";
 import { generateInviteRawToken, hashInviteToken } from "@/lib/invite-token";
 import { prisma } from "@/lib/prisma";
+import { isLabAdminUser, loadAuthzUser } from "@/lib/server-authz";
 import { ROLES } from "@/lib/roles";
 import type { FormState } from "../(dashboard)/orders/actions";
 
@@ -18,7 +19,8 @@ export async function createUserInviteAction(
 ): Promise<InviteFormState> {
   const session = await auth();
   if (!session?.user?.id) return { error: "You must be signed in." };
-  if (session.user.role !== ROLES.LAB_ADMIN) {
+  const authUser = await loadAuthzUser(session.user.id);
+  if (!isLabAdminUser(authUser)) {
     return { error: "Only lab staff can invite users." };
   }
 

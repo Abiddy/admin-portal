@@ -1,10 +1,11 @@
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
 import { revertLabOrderStatus, transitionOrderStatus } from "@/lib/order-lifecycle";
 import { getOrderForViewer } from "@/lib/order-queries";
-import { isLabRole, ORDER_STATUS, ROLES } from "@/lib/roles";
+import { prisma } from "@/lib/prisma";
+import { isDoctorWithPractice, isLabAdminUser, loadAuthzUser } from "@/lib/server-authz";
+import { ORDER_STATUS } from "@/lib/roles";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -16,17 +17,9 @@ export async function createRequisitionAction(_prev: FormState, formData: FormDa
     return { error: "You must be signed in." };
   }
 
-  const role = session.user.role;
-  if (role === ROLES.LAB_ADMIN) {
-    return { error: "Lab users cannot submit requisitions." };
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { practiceId: true },
-  });
-  if (!user?.practiceId) {
-    return { error: "Your account is not linked to a practice." };
+  const authUser = await loadAuthzUser(session.user.id);
+  if (!isDoctorWithPractice(authUser)) {
+    return { error: "Only practice users linked to a clinic can submit requisitions." };
   }
 
   const patientName = (formData.get("patientName") as string | null)?.trim() || "";
@@ -38,7 +31,7 @@ export async function createRequisitionAction(_prev: FormState, formData: FormDa
     return { error: "Enter at least a patient name or email." };
   }
 
-  const practiceId = user.practiceId;
+  const practiceId = authUser.practiceId;
 
   const order = await prisma.$transaction(async (tx) => {
     const o = await tx.order.create({
@@ -108,7 +101,8 @@ export async function updateLabOrderStatusAction(_prev: FormState, formData: For
   if (!session?.user?.id) {
     return { error: "You must be signed in." };
   }
-  if (!isLabRole(session.user.role)) {
+  const authUser = await loadAuthzUser(session.user.id);
+  if (!isLabAdminUser(authUser)) {
     return { error: "Only lab staff can update pipeline status." };
   }
 
@@ -149,7 +143,8 @@ export async function revertLabOrderStatusAction(_prev: FormState, formData: For
   if (!session?.user?.id) {
     return { error: "You must be signed in." };
   }
-  if (!isLabRole(session.user.role)) {
+  const authUser = await loadAuthzUser(session.user.id);
+  if (!isLabAdminUser(authUser)) {
     return { error: "Only lab staff can revert pipeline status." };
   }
 
